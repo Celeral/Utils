@@ -16,6 +16,6 @@
 /**
  * Utility classes useful for writing code that complies with good coding practices.
  * 
- * @since 1.0.0-SNAPSHOT
+ * @since 1.0.0
  */
 package com.celeral.utils;

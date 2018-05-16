@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.celeral.utils;
 
 import java.io.Serializable;
@@ -43,6 +42,7 @@ public interface StringCodec<T>
    * Given a string representation (typically from properties file) for an object , create object from it.
    *
    * @param string Type of the POJO which is created from String representation.
+   *
    * @return POJO obtained as a result of deserialization
    */
   T fromString(String string);
@@ -51,6 +51,7 @@ public interface StringCodec<T>
    * Given a POJO, serialize it to a String object (typically to be stored in properties file).
    *
    * @param pojo The object which needs to be serialized.
+   *
    * @return Serialized representation of pojo..
    */
   String toString(T pojo);
@@ -161,11 +162,12 @@ public interface StringCodec<T>
 
     private static final long serialVersionUID = 201706270412L;
   }
+
   /**
    * The attributes which represent arbitrary objects for which the schema cannot be
    * standardized, we allow them to be represented as &lt;ClassName&gt;:&lt;Constructor_String&gt;:&lt;Property_String&gt; representation.
    * This allows us to instantiate the class by invoking its constructor which takes
-   * &lt;String&gt as argument.  If only the &lt;ClassName&gt; is specified, then just the class is instantiated using default
+   * &lt;String&gt as argument. If only the &lt;ClassName&gt; is specified, then just the class is instantiated using default
    * constructor. If colon is specified then class is instantiated using constructor with
    * string as an argument.If properties are specified then properties will be set on the object. The properties
    * are defined in property=value format separated by colon(:)
@@ -383,13 +385,13 @@ public interface StringCodec<T>
     @Override
     public T fromString(String string)
     {
-      return string == null? null: Enum.valueOf(clazz, string);
+      return string == null ? null : Enum.valueOf(clazz, string);
     }
 
     @Override
     public String toString(T pojo)
     {
-      return pojo == null? null: pojo.name();
+      return pojo == null ? null : pojo.name();
     }
 
     private static final long serialVersionUID = 201310181757L;
@@ -418,5 +420,4 @@ public interface StringCodec<T>
 
     private static final long serialVersionUID = 201312082053L;
   }
-
 }
