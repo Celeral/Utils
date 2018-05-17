@@ -34,6 +34,16 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
  * gives greater flexibility to the developer by using the full suite of
  * Jackson's JSON API to express their objects in a form suitable to be
  * included in the textual configuration files.
+ * <p>
+ * jackson-databind-2.9.5 has a bug with the serialization of ObjectMapper.
+ * The particular bug makes the deserialized version of the Object2JSON
+ * throw an exception about the state of the ObjectMapper. The particular
+ * bug has been fixed in jackson-databind-2.9.6-SNAPSHOT version and it
+ * will be made available by 5/31/2018. I'll make a patch release of
+ * Utils after that to change the dependency. Until then if you are going
+ * to serialize the Object2JSON object, it's advisable to use a version
+ * of jackson-databind where this bug does not exist (2.2.0 and earlier
+ * and 2.9.6-SNAPSHOT and later).
  *
  * @param <T> type of the object to be converted to JSON string
  */
@@ -50,6 +60,7 @@ public class Object2JSON<T> implements StringCodec<T>, Serializable
   public T fromString(String string)
   {
     try {
+      @SuppressWarnings("unchecked")
       JSONWrapper<T> wrapper = mapper.readValue(string, JSONWrapper.class);
       return wrapper.object;
     }
@@ -62,7 +73,7 @@ public class Object2JSON<T> implements StringCodec<T>, Serializable
   @Override
   public String toString(T pojo)
   {
-    JSONWrapper wrapper = new JSONWrapper(pojo);
+    JSONWrapper<T> wrapper = new JSONWrapper<>(pojo);
     try {
       return mapper.writeValueAsString(wrapper);
     }
@@ -82,7 +93,10 @@ public class Object2JSON<T> implements StringCodec<T>, Serializable
 
     public JSONWrapper(T o)
     {
-      classname = (Class<T>)o.getClass();
+      @SuppressWarnings("unchecked")
+      Class<T> cn = (Class<T>)o.getClass();
+
+      classname = cn;
       object = o;
     }
 

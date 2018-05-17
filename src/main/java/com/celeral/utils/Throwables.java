@@ -53,9 +53,9 @@ public class Throwables
 
   /**
    *
-   * @param error
+   * @param error the error which needs to be wrapped
    *
-   * @return
+   * @return the error passed as an argument as it is
    *
    * @deprecated Error does not need to be wrapped; Instead of "throw DTThrowable.wrapIfChecked(error);" use "throw error;" directly.
    */
@@ -67,9 +67,9 @@ public class Throwables
 
   /**
    *
-   * @param exception
+   * @param exception the runtime exception which needs to be wrapped
    *
-   * @return
+   * @return the runtime exception passed as an argument as it is
    *
    * @deprecated Unchecked exception (subclass of RuntimeException) does not need to be wrapped; Instead of "DTThrowable.rethrow(runtime_exception);" use "throw runtime_exception;" directly.
    */

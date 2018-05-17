@@ -108,7 +108,9 @@ public class Object2JSONTest
 
     try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
          ObjectInputStream ois = new ObjectInputStream(bais)) {
-      o2j = (Object2JSON<MyClass>)ois.readObject();
+      @SuppressWarnings("unchecked")
+      Object2JSON<MyClass> o = (Object2JSON<MyClass>)ois.readObject();
+      o2j = o;
     }
 
     MyClass fromJson = o2j.fromString(json);

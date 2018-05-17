@@ -165,12 +165,13 @@ public interface StringCodec<T>
 
   /**
    * The attributes which represent arbitrary objects for which the schema cannot be
-   * standardized, we allow them to be represented as &lt;ClassName&gt;:&lt;Constructor_String&gt;:&lt;Property_String&gt; representation.
-   * This allows us to instantiate the class by invoking its constructor which takes
-   * &lt;String&gt as argument. If only the &lt;ClassName&gt; is specified, then just the class is instantiated using default
-   * constructor. If colon is specified then class is instantiated using constructor with
-   * string as an argument.If properties are specified then properties will be set on the object. The properties
-   * are defined in property=value format separated by colon(:)
+   * standardized, we allow them to be represented as &lt;ClassName&gt;:&lt;Constructor_String&gt;:&lt;Property_String&gt;
+   * representation. This allows us to instantiate the class by invoking its constructor
+   * which takes &lt;String&gt; as argument. If only the &lt;ClassName&gt; is specified,
+   * then just the class is instantiated using default constructor. If colon is 
+   * specified then class is instantiated using constructor with string as an argument.
+   * If properties are specified then properties will be set on the object.
+   * The properties are defined in property=value format separated by colon(:)
    *
    * @param <T> Type of the object which is converted to/from String
    */

@@ -120,8 +120,8 @@ public class Attribute<T> implements Serializable
      * Return the attribute value for the given key. If the map does not have an
      * entry for the key, null is returned.
      *
-     * @param <T>
-     * @param key
+     * @param <T> type of the attribute value
+     * @param key key for the attribute
      *
      * @return AttributeValue
      */
@@ -155,7 +155,7 @@ public class Attribute<T> implements Serializable
      *
      * @return a shallow copy of this AtrributeMap.
      *
-     * @throws java.lang.CloneNotSupportedException
+     * @throws java.lang.CloneNotSupportedException {@inheritDoc}
      */
     AttributeMap clone() throws CloneNotSupportedException;
 

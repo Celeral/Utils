@@ -52,7 +52,7 @@ public class SerializableObject implements Serializable
    *
    * @return an instance of the operator.
    *
-   * @throws ObjectStreamException
+   * @throws ObjectStreamException {@inheritDoc}
    */
   public Object readResolve() throws ObjectStreamException
   {
