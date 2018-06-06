@@ -29,6 +29,16 @@ import static org.slf4j.helpers.MessageFormatter.arrayFormat;
 public class Throwables
 {
 
+  /**
+   * Throws cause as it is if it is RuntimeException or Error,
+   * otherwise wraps it in RuntimeException and throws it.
+   *
+   * @param cause throwable to be wrapped if cannot be thrown directly
+   *
+   * @return the function does not return
+   *
+   * @see #wrapIfChecked(java.lang.Exception)
+   */
   public static RuntimeException wrapIfChecked(Throwable cause)
   {
     if (cause instanceof Error) {
@@ -42,6 +52,16 @@ public class Throwables
     throw new RuntimeException(cause);
   }
 
+  /**
+   * Throws exception as it is if it is RuntimeException,
+   * otherwise wraps it in RuntimeException and throws it.
+   *
+   * @param exception exception to be wrapped if cannot be thrown directly
+   *
+   * @return the function does not return
+   *
+   * @see #wrapIfChecked(java.lang.Throwable)
+   */
   public static RuntimeException wrapIfChecked(Exception exception)
   {
     if (exception instanceof RuntimeException) {
@@ -52,12 +72,16 @@ public class Throwables
   }
 
   /**
+   * Throws the error as it is. This method is added to statically
+   * warn the developer that this call is redundant by marking the
+   * call deprecated. The developer should be able to throw the
+   * error as it is directly.
    *
    * @param error the error which needs to be wrapped
    *
-   * @return the error passed as an argument as it is
+   * @return the function does not return
    *
-   * @deprecated Error does not need to be wrapped; Instead of "throw DTThrowable.wrapIfChecked(error);" use "throw error;" directly.
+   * @deprecated Error does not need to be wrapped; Instead of {@code throw Throwables.wrapIfChecked(error);} use {@code throw error;} directly.
    */
   @Deprecated
   public static RuntimeException wrapIfChecked(Error error)
@@ -66,12 +90,16 @@ public class Throwables
   }
 
   /**
+   * Throws the runtime exception as it is. This method is added to
+   * statically warn the developer that this call is redundant by
+   * marking the call deprecated. The developer should be able to
+   * throw the unchecked exception as it is directly.
    *
    * @param exception the runtime exception which needs to be wrapped
    *
-   * @return the runtime exception passed as an argument as it is
+   * @return the function does not return
    *
-   * @deprecated Unchecked exception (subclass of RuntimeException) does not need to be wrapped; Instead of "DTThrowable.rethrow(runtime_exception);" use "throw runtime_exception;" directly.
+   * @deprecated Unchecked exception (subclass of RuntimeException) does not need to be wrapped; Instead of {@code Throwables.rethrow(runtime_exception);} use {@code throw runtime_exception;} directly.
    */
   @Deprecated
   public static RuntimeException wrapIfChecked(RuntimeException exception)
@@ -79,6 +107,30 @@ public class Throwables
     throw exception;
   }
 
+  /**
+   * Throws the requested throwable after initializing it with the formatted message.
+   * This function uses reflection on the passed subclass of Throwable or Throwable
+   * class itself if it was passed to identify a constructor which takes a single
+   * argument of type String. If the constructor gets identified, the function invokes
+   * it with the formatted message string. The message is formatted using
+   * <a href="https://www.slf4j.org/api/org/slf4j/helpers/MessageFormatter.html">
+   * MessageFormatter</a> provided by slf4j by directly passing the messagePattern
+   * and all the arguments following it to MessageFormatter. The instance of throwable
+   * class thus obtained is thrown.
+   *
+   * @param <T>            Specific subtype of Throwable that's wished to be thrown
+   * @param clazz          Class object for type T
+   * @param messagePattern formatting pattern for the message
+   * @param args           arguments used to fill the placeholders in the formatting pattern
+   *
+   * @return this method does not return
+   *
+   * @throws T                if the method is successful
+   * @throws RuntimeException if clazz could not be instantiated for any reason
+   *
+   * @see #throwFormatted(java.lang.Throwable, java.lang.Class, java.lang.String, java.lang.Object...)
+   * @see <a href="https://www.slf4j.org/api/org/slf4j/helpers/MessageFormatter.html#arrayFormat(java.lang.String,%20java.lang.Object[])">org.slf4j.helpers.MessageFormatter.arrayFormat</a>
+   */
   @SuppressWarnings("UseSpecificCatch")
   public static <T extends Throwable> T throwFormatted(Class<T> clazz, String messagePattern, Object... args) throws T
   {
@@ -98,6 +150,32 @@ public class Throwables
     throw instance;
   }
 
+  /**
+   * Throws the requested throwable after initializing it with the formatted message and
+   * the passed cause.This function uses reflection on the passed subclass of Throwable
+   * or Throwable class itself if it was passed to identify a constructor which takes two
+   * arguments - the first one of type String, and the second one of type Throwable.
+   * If the constructor gets identified, the function invokes it with the formatted
+   * message string and passed cause. The message is formatted using
+   * <a href="https://www.slf4j.org/api/org/slf4j/helpers/MessageFormatter.html">
+   * MessageFormatter</a> provided by slf4j by directly passing the messagePattern
+   * and all the arguments following it to MessageFormatter. The instance of throwable
+   * class thus obtained is thrown.
+   *
+   * @param <T>            Specific subtype of Throwable that's wished to be thrown
+   * @param cause          root cause throwable for invoking this method
+   * @param clazz          Class object for type T
+   * @param messagePattern formatting pattern for the message
+   * @param args           arguments used to fill the placeholders in the formatting pattern
+   *
+   * @return this method does not return
+   *
+   * @throws T                if the method is successful
+   * @throws RuntimeException if clazz could not be instantiated for any reason
+   *
+   * @see #throwFormatted(java.lang.Class, java.lang.String, java.lang.Object...) 
+   * @see <a href="https://www.slf4j.org/api/org/slf4j/helpers/MessageFormatter.html#arrayFormat(java.lang.String,%20java.lang.Object[])">org.slf4j.helpers.MessageFormatter.arrayFormat</a>
+   */
   @SuppressWarnings({"UseSpecificCatch", "InfiniteRecursion"})
   public static <T extends Throwable> T throwFormatted(Throwable cause, Class<T> clazz, String messagePattern, Object... args) throws T
   {
