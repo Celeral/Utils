@@ -25,7 +25,7 @@ public interface Context
    *
    * @return attributes defined for the current context.
    */
-  public AttributeMap getAttributes();
+  AttributeMap getAttributes();
 
   /**
    * Get the value of the attribute associated with the current key by recursively traversing the contexts upwards to
@@ -33,8 +33,37 @@ public interface Context
    *
    * @param <T> - Type of the value stored against the attribute
    * @param key - Attribute to identify the attribute.
+   *
    * @return The value for the attribute if found or the defaultValue passed in as argument.
    */
-  public <T> T getValue(Attribute<T> key);
+  <T> T getValue(Attribute<T> key);
+
+  /**
+   * Context type decides how the values for attributes are resolved in this context
+   * with reference to the values that may be present in the parent context.
+   */
+  enum ContextType
+  {
+    /**
+     * The value if present in the current context overrides
+     * any value that may be present in the parent context.
+     */
+    OVERRIDE,
+    /**
+     * The value if present in the current context is merged
+     * with the value that may be present in the parent context.
+     */
+    MERGE,
+    /**
+     * The value if present in the current context or the default
+     * value. The value in the parent context is completely ignored.
+     */
+    MASK,
+    /**
+     * The value if present in the parent context or the default
+     * value. The value in this context is completely ignored.
+     */
+    PARENT
+  };
 
 }
