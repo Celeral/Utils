@@ -3,7 +3,6 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.celeral/utils/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.celeral%22%20AND%20a%3A%22utils%22)
 [![Javadoc](https://javadoc.io/badge/com.celeral/utils.svg)](https://www.javadoc.io/doc/com.celeral/utils)
 [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/https/oss.sonatype.org/com.celeral/utils.svg)](https://oss.sonatype.org/#nexus-search;gav~com.celeral~utils~~~)
-[![Coverage Status](https://coveralls.io/repos/github/Celeral/Utils/badge.svg?branch=master)](https://coveralls.io/github/Celeral/Utils?branch=master)
 
 Utilities for writing code leading to good coding practices!
 
@@ -22,7 +21,7 @@ Functionality of this package is contained in Java package `com.fasterxml.jackso
 <properties>
   ...
   <!-- Use the latest version whenever possible. -->
-  <celeral.version.utils>2.9.5</celeral.version.utils>
+  <celeral.version.utils>1.0.0</celeral.version.utils>
   ...
 </properties>
 
