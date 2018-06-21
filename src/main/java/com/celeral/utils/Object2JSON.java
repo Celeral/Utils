@@ -38,12 +38,10 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
  * jackson-databind-2.9.5 has a bug with the serialization of ObjectMapper.
  * The particular bug makes the deserialized version of the Object2JSON
  * throw an exception about the state of the ObjectMapper. The particular
- * bug has been fixed in jackson-databind-2.9.6-SNAPSHOT version and it
- * will be made available by 5/31/2018. I'll make a patch release of
- * Utils after that to change the dependency. Until then if you are going
+ * bug has been fixed in jackson-databind-2.9.6 version. If you are going
  * to serialize the Object2JSON object, it's advisable to use a version
  * of jackson-databind where this bug does not exist (2.2.0 and earlier
- * and 2.9.6-SNAPSHOT and later).
+ * and 2.9.6 and later).
  *
  * @param <T> type of the object to be converted to JSON string
  */
@@ -128,5 +126,6 @@ public class Object2JSON<T> implements StringCodec<T>, Serializable
       }
     }
   }
+  
   private static final long serialVersionUID = 201805140217L;
 }

@@ -41,6 +41,8 @@ public interface Context
   /**
    * Context type decides how the values for attributes are resolved in this context
    * with reference to the values that may be present in the parent context.
+   *
+   * @since 1.1.0
    */
   enum ContextType
   {

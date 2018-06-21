@@ -21,7 +21,7 @@ Functionality of this package is contained in Java package `com.fasterxml.jackso
 <properties>
   ...
   <!-- Use the latest version whenever possible. -->
-  <celeral.version.utils>1.0.0</celeral.version.utils>
+  <celeral.version.utils>1.1.0</celeral.version.utils>
   ...
 </properties>
 
