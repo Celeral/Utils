@@ -15,8 +15,6 @@ Java package `com.celeral.utils`.
 
 To use the package, you need to use following Maven dependency:
 
-Functionality of this package is contained in Java package `com.fasterxml.jackson.databind`, and can be used using following Maven dependency:
-
 ```xml
 <properties>
   ...
