@@ -2,9 +2,10 @@
 
 All notable changes to Utils project will be documented in this file.
 
-## [Unreleased][]
+## [1.2.0] (2019-01-17)
 
-* Your contribution here!
+* Upgraded jackson-databind version to 2.9.8 from 2.9.5 to address a few CVEs
+* Introduced WeakIdentityHashMap
 
 ## [1.1.0][] (2018-06-21)
 
