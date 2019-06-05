@@ -2,7 +2,13 @@
 
 All notable changes to Utils project will be documented in this file.
 
-## [1.2.0] (2019-01-17)
+## [1.3.0][] (2019-01-04)
+
+* Upgraded jackson-databind version to 2.9.9 from 2.9.8 to address a CVE
+* Introduced instantiable Closeables to track serially allocated resources
+* Introduced ThrowableFactory to instantiate Throwables with arbitrary constructors
+
+## [1.2.0][] (2019-01-17)
 
 * Upgraded jackson-databind version to 2.9.8 from 2.9.5 to address a few CVEs
 * Introduced WeakIdentityHashMap
@@ -20,3 +26,6 @@ All notable changes to Utils project will be documented in this file.
 [Semver]: http://semver.org
 [Unreleased]: https://github.com/Celeral/Utils/compare/v1.1.0...HEAD
 [1.1.0]: https://github.com/Celeral/Utils/compare/v1.0.0...v1.1.0
+[1.2.0]: https://github.com/Celeral/Utils/compare/v1.1.0...v1.2.0
+[1.3.0]: https://github.com/Celeral/Utils/compare/v1.2.0...v1.3.0
+
