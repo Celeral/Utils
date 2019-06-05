@@ -134,20 +134,7 @@ public class Throwables
   @SuppressWarnings("UseSpecificCatch")
   public static <T extends Throwable> T throwFormatted(Class<T> clazz, String messagePattern, Object... args) throws T
   {
-    String message = arrayFormat(messagePattern, args).getMessage();
-
-    T instance = null;
-    try {
-      Constructor<T> constructor = clazz.getConstructor(String.class);
-      instance = constructor.newInstance(message);
-    }
-    catch (Exception ex) {
-      throw throwFormatted(ex, RuntimeException.class,
-                           "Couldn't throw exception of type {} with message {} as constructor that takes only message String was not found!",
-                           clazz.getName(), message);
-    }
-
-    throw instance;
+    throw throwFormatted(null, clazz, messagePattern, args);
   }
 
   /**
@@ -177,23 +164,106 @@ public class Throwables
    * @see <a href="https://www.slf4j.org/api/org/slf4j/helpers/MessageFormatter.html#arrayFormat(java.lang.String,%20java.lang.Object[])">org.slf4j.helpers.MessageFormatter.arrayFormat</a>
    */
   @SuppressWarnings({"UseSpecificCatch", "InfiniteRecursion"})
-  public static <T extends Throwable> T throwFormatted(Throwable cause, Class<T> clazz, String messagePattern, Object... args) throws T
+  public static <T extends Throwable> T throwFormatted(Throwable cause, final Class<T> clazz, String messagePattern, Object... args) throws T
+  {
+    ThrowableFactory<T> factory = new ThrowableFactory<T>()
+    {
+      @Override
+      public T createThrowable(String message, Throwable cause) throws Exception
+      {
+        Constructor<T> constructor = clazz.getConstructor(String.class, Throwable.class);
+        return constructor.newInstance(message, cause);
+      }
+    };
+
+    throw throwFormatted(cause, factory, messagePattern, args);
+  }
+
+  /**
+   * Throws the throwable created by the factory upon invoking it with the formatted message
+   * and the null cause. The function invokes the createThrowable method on the factory with
+   * the formatted message string and null cause. The message is formatted using
+   * <a href="https://www.slf4j.org/api/org/slf4j/helpers/MessageFormatter.html">
+   * MessageFormatter</a> provided by slf4j by directly passing the messagePattern
+   * and all the arguments following it to MessageFormatter. The instance of throwable
+   * class thus obtained is thrown.
+   *
+   * @param <T>            Specific subtype of Throwable that's wished to be thrown
+   * @param factory        Factory for creating an instance of the requested Throwable
+   * @param messagePattern formatting pattern for the message
+   * @param args           arguments used to fill the placeholders in the formatting pattern
+   *
+   * @return this method does not return
+   *
+   * @throws T                if the method is successful
+   * @throws RuntimeException if clazz could not be instantiated for any reason
+   *
+   * @see #throwFormatted(Throwable, ThrowableFactory, java.lang.String, java.lang.Object...)
+   * @see <a href="https://www.slf4j.org/api/org/slf4j/helpers/MessageFormatter.html#arrayFormat(java.lang.String,%20java.lang.Object[])">org.slf4j.helpers.MessageFormatter.arrayFormat</a>
+   */
+  public static <T extends Throwable> T throwFormatted(ThrowableFactory<T> factory, String messagePattern, Object... args) throws T
+  {
+      throw throwFormatted(null, factory, messagePattern, args);
+  }
+
+  /**
+   * Throws the throwable created by the factory upon invoking it with the formatted message
+   * and the requested cause. The function invokes the createThrowable method on the factory
+   * with the formatted message string and cause argument. The message is formatted using
+   * <a href="https://www.slf4j.org/api/org/slf4j/helpers/MessageFormatter.html">
+   * MessageFormatter</a> provided by slf4j by directly passing the messagePattern
+   * and all the arguments following it to MessageFormatter. The instance of throwable
+   * class thus obtained is thrown.
+   *
+   * @param <T>            Specific subtype of Throwable that's wished to be thrown
+   * @param cause          root cause throwable for invoking this method
+   * @param factory        Factory for creating an instance of the requested Throwable
+   * @param messagePattern formatting pattern for the message
+   * @param args           arguments used to fill the placeholders in the formatting pattern
+   *
+   * @return this method does not return
+   *
+   * @throws T                if the method is successful
+   * @throws RuntimeException if clazz could not be instantiated for any reason
+   *
+   * @see #throwFormatted(ThrowableFactory, java.lang.String, java.lang.Object...)
+   * @see <a href="https://www.slf4j.org/api/org/slf4j/helpers/MessageFormatter.html#arrayFormat(java.lang.String,%20java.lang.Object[])">org.slf4j.helpers.MessageFormatter.arrayFormat</a>
+   */
+  public static <T extends Throwable> T throwFormatted(Throwable cause, ThrowableFactory<T> factory, String messagePattern, Object... args) throws T
   {
     String message = arrayFormat(messagePattern, args).getMessage();
 
-    T instance = null;
+    T instance;
     try {
-      Constructor<T> constructor = clazz.getConstructor(String.class, Throwable.class);
-      instance = constructor.newInstance(message, cause);
+      instance = factory.createThrowable(message, cause);
     }
     catch (Exception ex) {
       ex.addSuppressed(cause);
       throw throwFormatted(ex, RuntimeException.class,
-                           "Couldn't throw exception of type {} with message {} as constructor that takes only message String was not found!",
-                           clazz.getName(), message);
+                           "Couldn't throw exception with message {}!",
+                           message);
     }
 
     throw instance;
   }
 
+  /**
+   * An interface to model the factory for creation of the Throwable objects which do not follow
+   * the standard constructor or require additional processing besides invocation of the standard
+   * constructors.
+   *
+   * @param <T> common supertype for all different types of throwables created by this factory
+   */
+  public interface ThrowableFactory<T extends Throwable>
+  {
+    /**
+     * Create a throwable of type T using the message and the root cause.
+     *
+     * @param message message for the throwable
+     * @param cause root cause to initialize the throwable with
+     * @return the requested throwable
+     * @throws Exception for any reason if the throwable cannot be created, the exception is thrown.
+     */
+     T createThrowable(String message, Throwable cause) throws Exception;
+  }
 }

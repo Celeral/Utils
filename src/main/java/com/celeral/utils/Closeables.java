@@ -15,8 +15,36 @@
  */
 package com.celeral.utils;
 
-public class Closeables
+import java.util.ArrayList;
+
+public class Closeables implements AutoCloseable
 {
+  private final AutoCloseable[] EMPTY_CLOSEABLES = new AutoCloseable[0];
+
+  private final ArrayList<AutoCloseable> closeables = new ArrayList<>();
+  private final String message;
+  private boolean frozen;
+
+  public Closeables(String message)
+  {
+    this.message = message;
+  }
+
+  public void add(AutoCloseable closeable)
+  {
+    closeables.add(closeable);
+  }
+
+  public void freeze()
+  {
+    frozen = true;
+  }
+
+  public void thaw()
+  {
+    frozen = false;
+  }
+
   @SuppressWarnings(value = "ThrowFromFinallyBlock")
   public static void close(String message, AutoCloseable... closeables)
   {
@@ -38,6 +66,21 @@ public class Closeables
       if (re != null) {
         throw re;
       }
+    }
+  }
+
+  @Override
+  public void close()
+  {
+    if (frozen) {
+      return;
+    }
+
+    try {
+      Closeables.close(message, closeables.toArray(EMPTY_CLOSEABLES));
+    }
+    finally {
+      closeables.clear();
     }
   }
 }
