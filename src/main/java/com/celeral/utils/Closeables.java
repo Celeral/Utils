@@ -25,6 +25,11 @@ public class Closeables implements AutoCloseable
   private final String message;
   private boolean frozen;
 
+  public Closeables()
+  {
+    this(null);
+  }
+
   public Closeables(String message)
   {
     this.message = message;
