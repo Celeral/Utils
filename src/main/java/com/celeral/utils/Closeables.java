@@ -32,14 +32,20 @@ import org.slf4j.helpers.MessageFormatter;
  * one needs to invoke {@link #protect()} to protect all the tracked resources from
  * being freed. If the protected resources need to be freed, one needs to call {@link
  * #expose()} to expose all the tracked resources before invoking {@link #close()}.
- * By default, all the resources are exposed i.e. unprotected state.
+ * By default, all the resources are exposed i.e. they are in unprotected state.
  */
-public class Closeables implements AutoCloseable
+public class Closeables extends Consumables<AutoCloseable>
 {
-  private final ArrayDeque<AutoCloseable> closeables;
-  private final String messagePattern;
-  private final Object[] args;
-  private boolean isProtected;
+  private static final Consumables.Consumer<AutoCloseable> consumer =
+    new Consumables.Consumer<AutoCloseable>()
+    {
+      @Override
+      public void accept(AutoCloseable closeable) throws Exception
+      {
+        closeable.close();
+      }
+    };
+
 
   /**
    * Creates closeables instance without any message associated with it.
@@ -61,7 +67,7 @@ public class Closeables implements AutoCloseable
   public Closeables(AutoCloseable closeable)
   {
     this(null, (Object[])null);
-    closeables.add(closeable);
+    super.add(closeable);
   }
 
   /**
@@ -75,36 +81,18 @@ public class Closeables implements AutoCloseable
    */
   public Closeables(String messagePattern, Object... args)
   {
-    this.closeables = new ArrayDeque<>(1);
-    this.messagePattern = messagePattern;
-    this.args = args;
+    super(consumer, messagePattern, args);
   }
 
   /**
-   * Adds resources for tracking purpose.
+   * Adds closeable for tracking purpose.
    *
-   * @param closeable resource to be tracked
+   * @param closeable consumable to be tracked
    */
+  @Override
   public void add(AutoCloseable closeable)
   {
-    closeables.addFirst(closeable);
-  }
-
-  /**
-   * Protects the tracked resources from getting freed if {@link #close()} is called.
-   * The tracked resources stay in the protected state until {@link #expose()} is called.
-   */
-  public void protect()
-  {
-    isProtected = true;
-  }
-
-  /**
-   * Unprotects the tracked resources if they were in protected state due to call to {@link #protect()}.
-   */
-  public void expose()
-  {
-    isProtected = false;
+    super.add(closeable);
   }
 
   /**
@@ -126,7 +114,7 @@ public class Closeables implements AutoCloseable
    */
   public static void close(String message, AutoCloseable... closeables)
   {
-    Closeables.close(Arrays.asList(closeables), message);
+    Consumables.consume(consumer, Arrays.asList(closeables), message);
   }
 
   /**
@@ -150,56 +138,9 @@ public class Closeables implements AutoCloseable
    */
   public static void close(Iterable<AutoCloseable> closeables, String messagePattern, Object... args)
   {
-    RuntimeException re = null;
-
-    try {
-      for (AutoCloseable closeable : closeables) {
-        try {
-          closeable.close();
-        }
-        catch (Exception ex) {
-          if (re == null) {
-            re = messagePattern == null ? new RuntimeException() : new RuntimeException(MessageFormatter.arrayFormat(messagePattern, args).getMessage());
-          }
-
-          re.addSuppressed(ex);
-        }
-      }
-    }
-    catch (Error er) {
-      if (re != null) {
-        er.addSuppressed(re);
-      }
-
-      throw er;
-    }
-
-
-    if (re != null) {
-      throw re;
-    }
-  }
-
-  /**
-   * Closes all the tracked resources only if they are not protected. Once the closing
-   * of the resources is attempted using {@link #close(Iterable, String, Object...)}
-   * irrespective of outcome, all the resources are removed from list of tracked resources.
-   *
-   * @see #protect()
-   * @see #expose()
-   */
-  @Override
-  public void close()
-  {
-    if (isProtected) {
-      return;
-    }
-
-    try {
-      Closeables.close(closeables, messagePattern, args);
-    }
-    finally {
-      closeables.clear();
-    }
+    Consumables.consume(consumer,
+                        closeables,
+                        messagePattern,
+                        args);
   }
 }
