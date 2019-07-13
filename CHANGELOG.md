@@ -2,7 +2,7 @@
 
 All notable changes to Utils project will be documented in this file.
 
-## [1.3.0][] (2019-01-04)
+## [1.3.1][] (2019-01-04)
 
 * Upgraded jackson-databind version to 2.9.9 from 2.9.8 to address a CVE
 * Introduced instantiable Closeables to track serially allocated resources
