@@ -3,7 +3,9 @@ package com.celeral.utils;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 
-import org.slf4j.helpers.MessageFormatter;
+import com.celeral.utils.function.AutoConsumer;
+
+import org.apache.logging.log4j.message.ParameterizedMessageFactory;
 
 /**
  * Helper class to ensure that when more than one consumables are consumed serially,
@@ -23,23 +25,7 @@ import org.slf4j.helpers.MessageFormatter;
  */
 public class Consumables<T> implements AutoCloseable
 {
-  /**
-   * Represents an operation that accepts a single input argument and returns no result.
-   *
-   * @param <T> the type of the consumable
-   */
-  public interface Consumer<T>
-  {
-    /**
-     * Performs this operation on the given argument.
-     *
-     * @param t the consumable
-     * @throws Exception if this consumable cannot be consumed
-     */
-    void accept(T t) throws Exception;
-  }
-
-  private final Consumer<T> consumer;
+  private final AutoConsumer<T> consumer;
   private final ArrayDeque<T> consumables;
   private final String messagePattern;
   private final Object[] args;
@@ -55,7 +41,7 @@ public class Consumables<T> implements AutoCloseable
    * @param messagePattern the message pattern for annotating the runtime exception
    * @param args           the positional argument to replace the placeholders in the message pattern
    */
-  public Consumables(Consumer<T> consumer, String messagePattern, Object... args)
+  public Consumables(AutoConsumer<T> consumer, String messagePattern, Object... args)
   {
     this.consumer = consumer;
     this.consumables = new ArrayDeque<>(1);
@@ -93,7 +79,7 @@ public class Consumables<T> implements AutoCloseable
 
   /**
    * Attempt to consume all the consumables in the order provided. This method returns normally if all the
-   * consumables passed could be consumed without any of the {@link Consumer#accept(Object)} throwing exception
+   * consumables passed could be consumed without any of the {@link AutoConsumer#accept(Object)} throwing exception
    * or error.
    * <p>
    * While consuming any particular consumable, if an {@link Exception} is thrown, a new wrapping exception of
@@ -109,17 +95,17 @@ public class Consumables<T> implements AutoCloseable
    * @param message     message to annotate the runtime exception
    * @param consumer    common consumer to consume all the consumables
    * @param consumables consumables which need to be consumed
-   * @see #consume(Consumer, Iterable, String, Object...)
+   * @see #consume(com.celeral.utils.function.AutoConsumer, java.lang.Iterable, java.lang.String, java.lang.Object...)
    */
   @SafeVarargs
-  public static <T> void consume(String message, Consumer<T> consumer, T... consumables)
+  public static <T> void consume(String message, AutoConsumer<T> consumer, T... consumables)
   {
     Consumables.consume(consumer, Arrays.asList(consumables), message);
   }
 
   /**
    * Consumes all the tracked consumables only if they are not protected. Once the consumption
-   * of the consumables is attempted using {@link #consume(Consumer, Iterable, String, Object...)}
+   * of the consumables is attempted using {@link #consume(java.lang.String, com.celeral.utils.function.AutoConsumer, java.lang.Object...) }
    * irrespective of outcome, all the consumables are removed from list of tracked consumables.
    *
    * @see #protect()
@@ -142,7 +128,7 @@ public class Consumables<T> implements AutoCloseable
 
   /**
    * Attempt to consume all the consumables in the order provided. This method returns normally if all the
-   * consumables passed could be consumed without any of the {@link Consumer#accept(Object)} throwing exception
+   * consumables passed could be consumed without any of the {@link AutoConsumer#accept(Object)} throwing exception
    * or error.
    * <p>
    * While consuming any particular consumable, if an {@link Exception} is thrown, a new wrapping exception of
@@ -160,7 +146,7 @@ public class Consumables<T> implements AutoCloseable
    * @param messagePattern template to create message from for runtime exception
    * @param args           positional arguments to substitute in the messagePattern
    */
-  public static <T> void consume(Consumer<T> consumer, Iterable<T> consumables, String messagePattern, Object... args)
+  public static <T> void consume(AutoConsumer<T> consumer, Iterable<T> consumables, String messagePattern, Object... args)
   {
     RuntimeException re = null;
 
@@ -171,7 +157,7 @@ public class Consumables<T> implements AutoCloseable
         }
         catch (Exception ex) {
           if (re == null) {
-            re = messagePattern == null ? new RuntimeException() : new RuntimeException(MessageFormatter.arrayFormat(messagePattern, args).getMessage());
+            re = messagePattern == null ? new RuntimeException() : new RuntimeException(ParameterizedMessageFactory.INSTANCE.newMessage(messagePattern, args).getFormattedMessage());
           }
 
           re.addSuppressed(ex);

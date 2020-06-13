@@ -23,8 +23,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Helper base class to ensure that Java Serializer is able to work with
@@ -78,12 +78,16 @@ public class SerializableObject implements Serializable
     catch (NoSuchMethodException snme) {
       logger.debug("No copy constructor detected for class {}, trying default constructor.", this.getClass().getSimpleName());
       try {
-        SerializableObject newInstance = this.getClass().newInstance();
+        SerializableObject newInstance = this.getClass().getConstructor().newInstance();
         transferStateTo(newInstance);
         return newInstance;
       }
       catch (IllegalAccessException
-             | InstantiationException ex) {
+                     | InstantiationException
+                     | NoSuchMethodException
+                     | SecurityException
+                     | IllegalArgumentException
+                     | InvocationTargetException ex) {
         throw new RuntimeException("Deserialization using default constructor failed!", ex);
       }
     }
@@ -131,5 +135,5 @@ public class SerializableObject implements Serializable
   }
 
   private static final long serialVersionUID = 201505211622L;
-  private static final Logger logger = LoggerFactory.getLogger(SerializableObject.class);
+  private static final Logger logger = LogManager.getLogger();
 }

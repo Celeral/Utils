@@ -17,7 +17,7 @@ package com.celeral.utils;
 
 import java.lang.reflect.Constructor;
 
-import static org.slf4j.helpers.MessageFormatter.arrayFormat;
+import org.apache.logging.log4j.message.ParameterizedMessageFactory;
 
 /**
  * Collection of helper methods to ensure that exceptions are
@@ -26,7 +26,7 @@ import static org.slf4j.helpers.MessageFormatter.arrayFormat;
  * Otherwise the cause is wrapped in a RuntimeException and
  * the later is thrown.
  */
-public class Throwables
+public interface Throwables
 {
 
   /**
@@ -105,10 +105,10 @@ public class Throwables
    * class itself if it was passed to identify a constructor which takes a single
    * argument of type String. If the constructor gets identified, the function invokes
    * it with the formatted message string. The message is formatted using
-   * <a href="https://www.slf4j.org/api/org/slf4j/helpers/MessageFormatter.html">
-   * MessageFormatter</a> provided by slf4j by directly passing the messagePattern
-   * and all the arguments following it to MessageFormatter. The instance of throwable
-   * class thus obtained is thrown.
+   * <a href="https://logging.apache.org/log4j/2.x/log4j-api/apidocs/org/apache/logging/log4j/message/ParameterizedMessageFactory.html">
+   * ParameterizedMessageFactory</a> provided by log4j2 by directly passing the
+   * messagePattern and all the arguments following it to the ParameterizedMessageFactory.
+   * The instance of throwable class thus obtained is thrown.
    *
    * @param <T>            Specific subtype of Throwable that's wished to be thrown
    * @param clazz          Class object for type T
@@ -118,7 +118,7 @@ public class Throwables
    * @throws T                if the method is successful
    * @throws RuntimeException if clazz could not be instantiated for any reason
    * @see #throwFormatted(java.lang.Throwable, java.lang.Class, java.lang.String, java.lang.Object...)
-   * @see <a href="https://www.slf4j.org/api/org/slf4j/helpers/MessageFormatter.html#arrayFormat(java.lang.String,%20java.lang.Object[])">org.slf4j.helpers.MessageFormatter.arrayFormat</a>
+   * @see <a href="https://logging.apache.org/log4j/2.x/log4j-api/apidocs/org/apache/logging/log4j/message/ParameterizedMessageFactory.html#newMessage-java.lang.String-java.lang.Object...-">org.apache.logging.log4j.message.ParameterizedMessageFactory.newMessage</a>
    */
   @SuppressWarnings("UseSpecificCatch")
   public static <T extends Throwable> T throwFormatted(Class<T> clazz, String messagePattern, Object... args) throws T
@@ -133,10 +133,10 @@ public class Throwables
    * arguments - the first one of type String, and the second one of type Throwable.
    * If the constructor gets identified, the function invokes it with the formatted
    * message string and passed cause. The message is formatted using
-   * <a href="https://www.slf4j.org/api/org/slf4j/helpers/MessageFormatter.html">
-   * MessageFormatter</a> provided by slf4j by directly passing the messagePattern
-   * and all the arguments following it to MessageFormatter. The instance of throwable
-   * class thus obtained is thrown.
+   * <a href="https://logging.apache.org/log4j/2.x/log4j-api/apidocs/org/apache/logging/log4j/message/ParameterizedMessageFactory.html">
+   * ParameterizedMessageFactory</a> provided by log4j2 by directly passing the
+   * messagePattern and all the arguments following it to the ParameterizedMessageFactory.
+   * The instance of throwable class thus obtained is thrown.
    *
    * @param <T>            Specific subtype of Throwable that's wished to be thrown
    * @param cause          root cause throwable for invoking this method
@@ -147,32 +147,25 @@ public class Throwables
    * @throws T                if the method is successful
    * @throws RuntimeException if clazz could not be instantiated for any reason
    * @see #throwFormatted(java.lang.Class, java.lang.String, java.lang.Object...)
-   * @see <a href="https://www.slf4j.org/api/org/slf4j/helpers/MessageFormatter.html#arrayFormat(java.lang.String,%20java.lang.Object[])">org.slf4j.helpers.MessageFormatter.arrayFormat</a>
+   * @see <a href="https://logging.apache.org/log4j/2.x/log4j-api/apidocs/org/apache/logging/log4j/message/ParameterizedMessageFactory.html#newMessage-java.lang.String-java.lang.Object...-">org.apache.logging.log4j.message.ParameterizedMessageFactory.newMessage</a>
    */
   @SuppressWarnings({"UseSpecificCatch", "InfiniteRecursion"})
   public static <T extends Throwable> T throwFormatted(final Throwable cause, final Class<T> clazz, String messagePattern, Object... args) throws T
   {
-    ThrowableFactory<T> factory = new ThrowableFactory<T>()
-    {
-      @Override
-      public T createThrowable(String message) throws Exception
-      {
-        Constructor<T> constructor = clazz.getConstructor(String.class, Throwable.class);
-        return constructor.newInstance(message, cause);
-      }
-    };
-
-    throw Throwables.throwFormatted(factory, messagePattern, args);
+    throw Throwables.throwFormatted(message -> {
+      Constructor<T> constructor = clazz.getConstructor(String.class, Throwable.class);
+      return constructor.newInstance(message, cause);
+    }, messagePattern, args);
   }
 
   /**
    * Throws the throwable created by the factory upon invoking it with the formatted message
    * and the null cause. The function invokes the createThrowable method on the factory with
    * the formatted message string and null cause. The message is formatted using
-   * <a href="https://www.slf4j.org/api/org/slf4j/helpers/MessageFormatter.html">
-   * MessageFormatter</a> provided by slf4j by directly passing the messagePattern
-   * and all the arguments following it to MessageFormatter. The instance of throwable
-   * class thus obtained is thrown.
+   * <a href="https://logging.apache.org/log4j/2.x/log4j-api/apidocs/org/apache/logging/log4j/message/ParameterizedMessageFactory.html">
+   * ParameterizedMessageFactory</a> provided by log4j2 by directly passing the
+   * messagePattern and all the arguments following it to the ParameterizedMessageFactory.
+   * The instance of throwable class thus obtained is thrown.
    *
    * @param <T>            Specific subtype of Throwable that's wished to be thrown
    * @param factory        Factory for creating an instance of the requested Throwable
@@ -181,11 +174,11 @@ public class Throwables
    * @return this method does not return
    * @throws T                if the method is successful
    * @throws RuntimeException if clazz could not be instantiated for any reason
-   * @see <a href="https://www.slf4j.org/api/org/slf4j/helpers/MessageFormatter.html#arrayFormat(java.lang.String,%20java.lang.Object[])">org.slf4j.helpers.MessageFormatter.arrayFormat</a>
+   * @see <a href="https://logging.apache.org/log4j/2.x/log4j-api/apidocs/org/apache/logging/log4j/message/ParameterizedMessageFactory.html#newMessage-java.lang.String-java.lang.Object...-">org.apache.logging.log4j.message.ParameterizedMessageFactory.newMessage</a>
    */
   public static <T extends Throwable> T throwFormatted(ThrowableFactory<T> factory, String messagePattern, Object... args) throws T
   {
-    String message = arrayFormat(messagePattern, args).getMessage();
+    String message = ParameterizedMessageFactory.INSTANCE.newMessage(messagePattern, args).getFormattedMessage();
 
     T instance;
     try {
@@ -198,6 +191,12 @@ public class Throwables
     }
 
     throw instance;
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <T extends Throwable> T throwSneaky(Throwable th) throws T
+  {
+    throw (T) th;
   }
 
   /**
