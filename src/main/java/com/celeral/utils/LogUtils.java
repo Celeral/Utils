@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.celeral.utils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.apache.logging.log4j.Logger;
 
-import org.slf4j.Logger;
-
-public class LogUtils
+public interface LogUtils
 {
   public static final String JAVA_CLASS_PATH = "java.class.path";
   public static final String JAVA_LIBRARY_PATH = "java.library.path";
@@ -39,17 +37,17 @@ public class LogUtils
     }
   }
 
-  public static final void logJavaClassPath(Logger logger)
+  static void logJavaClassPath(Logger logger)
   {
     logPath(logger, JAVA_CLASS_PATH, SystemUtils.JAVA_CLASS_PATH);
   }
 
-  public static final void logJavaLibraryPath(Logger logger)
+  static void logJavaLibraryPath(Logger logger)
   {
     logPath(logger, JAVA_LIBRARY_PATH, SystemUtils.JAVA_LIBRARY_PATH);
   }
 
-  public static final void logLDLibraryPath(Logger logger)
+  static void logLDLibraryPath(Logger logger)
   {
     logPath(logger, LD_LIBRARY_PATH, System.getenv(LD_LIBRARY_PATH));
   }

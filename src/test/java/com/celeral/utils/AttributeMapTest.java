@@ -16,17 +16,15 @@
 
 package com.celeral.utils;
 
-import com.celeral.utils.Attribute;
-import com.celeral.utils.Attribute;
-
 import java.util.Set;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import org.junit.Test;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.Test;
 
 
 /**
@@ -64,5 +62,5 @@ public class AttributeMapTest
     assertSame("Attribute", Greeting.howdy, howdy);
   }
 
-  private static final Logger logger = LoggerFactory.getLogger(AttributeMapTest.class);
+  private static final Logger logger = LogManager.getLogger();
 }

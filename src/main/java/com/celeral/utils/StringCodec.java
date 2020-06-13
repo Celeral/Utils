@@ -215,7 +215,7 @@ public interface StringCodec<T>
         @SuppressWarnings("unchecked")
         Class<? extends T> clazz = (Class<? extends T>)loadClass(parts[0], Thread.currentThread().getContextClassLoader());
         if (parts.length == 1) {
-          return clazz.newInstance();
+          return clazz.getConstructor().newInstance();
         }
 
         return clazz.getConstructor(String.class).newInstance(parts[1]);

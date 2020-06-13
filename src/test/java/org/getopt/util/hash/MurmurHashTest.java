@@ -15,11 +15,9 @@
  */
 package org.getopt.util.hash;
 
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MurmurHashTest
 {
@@ -40,5 +38,5 @@ public class MurmurHashTest
     }
   }
 
-  private static final Logger logger = LoggerFactory.getLogger(MurmurHashTest.class);
+  private static final Logger logger = LogManager.getLogger();
 }

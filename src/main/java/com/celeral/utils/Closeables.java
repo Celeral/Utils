@@ -15,11 +15,8 @@
  */
 package com.celeral.utils;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.slf4j.helpers.MessageFormatter;
 
 /**
  * Helper class to ensure that when more than one AutoClosable are closed serially,
@@ -36,17 +33,6 @@ import org.slf4j.helpers.MessageFormatter;
  */
 public class Closeables extends Consumables<AutoCloseable>
 {
-  private static final Consumables.Consumer<AutoCloseable> consumer =
-    new Consumables.Consumer<AutoCloseable>()
-    {
-      @Override
-      public void accept(AutoCloseable closeable) throws Exception
-      {
-        closeable.close();
-      }
-    };
-
-
   /**
    * Creates closeables instance without any message associated with it.
    *
@@ -81,7 +67,7 @@ public class Closeables extends Consumables<AutoCloseable>
    */
   public Closeables(String messagePattern, Object... args)
   {
-    super(consumer, messagePattern, args);
+    super(AutoCloseable::close, messagePattern, args);
   }
 
   /**
@@ -114,7 +100,7 @@ public class Closeables extends Consumables<AutoCloseable>
    */
   public static void close(String message, AutoCloseable... closeables)
   {
-    Consumables.consume(consumer, Arrays.asList(closeables), message);
+    Consumables.consume(AutoCloseable::close, Arrays.asList(closeables), message);
   }
 
   /**
@@ -138,7 +124,7 @@ public class Closeables extends Consumables<AutoCloseable>
    */
   public static void close(Iterable<AutoCloseable> closeables, String messagePattern, Object... args)
   {
-    Consumables.consume(consumer,
+    Consumables.consume(AutoCloseable::close,
                         closeables,
                         messagePattern,
                         args);
