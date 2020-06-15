@@ -81,7 +81,11 @@ public interface Async
       }
     }
     catch (Throwable th) {
-      return CompletableFuture.failedFuture(th instanceof CompletionException ? th : new CompletionException(th));
+      CompletableFuture<R> future = new CompletableFuture<>();
+      future.completeExceptionally(th instanceof CompletionException ? th : new CompletionException(th));
+      return future;
+      // the following is only available in java 9 and is equivalent of above 3 lines
+      //return CompletableFuture.failedFuture(th instanceof CompletionException ? th : new CompletionException(th));
     }
   }
 
