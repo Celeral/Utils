@@ -135,5 +135,5 @@ public class SerializableObject implements Serializable
   }
 
   private static final long serialVersionUID = 201505211622L;
-  private static final Logger logger = LogManager.getLogger();
+  private static final Logger logger = LogManager.getLogger(SerializableObject.class);
 }
