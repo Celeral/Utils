@@ -1,6 +1,9 @@
 # Utils Change Log
 
 All notable changes to Utils project will be documented in this file.
+## [2.0.1][] (2020-08-15)
+* Update parent pom to 2.1.0 to fix CVEs from the dependencies declared in parent pom
+* Generate Java 8 compatible code to keep things simple for Android
 
 ## [2.0.0][] (2020-06-13)
 
@@ -35,4 +38,4 @@ All notable changes to Utils project will be documented in this file.
 [1.2.0]: https://github.com/Celeral/Utils/compare/v1.1.0...v1.2.0
 [1.3.1]: https://github.com/Celeral/Utils/compare/v1.2.0...v1.3.1
 [2.0.0]: https://github.com/Celeral/Utils/compare/v1.3.1...v2.0.0
-
+[2.0.1]: https://github.com/Celeral/Utils/compare/v2.0.0...v2.0.1
