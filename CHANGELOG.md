@@ -2,6 +2,12 @@
 
 All notable changes to Utils project will be documented in this file.
 
+## [2.0.0][] (2020-06-13)
+
+* Added Async class to provide try-with-resource functionality with async operations on resource
+* Moved classes Slice, VarInt, and MurmurHash from netlet
+* Extract Consumables super class from Closeables
+
 ## [1.3.1][] (2019-01-04)
 
 * Upgraded jackson-databind version to 2.9.9 from 2.9.8 to address a CVE
@@ -28,4 +34,5 @@ All notable changes to Utils project will be documented in this file.
 [1.1.0]: https://github.com/Celeral/Utils/compare/v1.0.0...v1.1.0
 [1.2.0]: https://github.com/Celeral/Utils/compare/v1.1.0...v1.2.0
 [1.3.1]: https://github.com/Celeral/Utils/compare/v1.2.0...v1.3.1
+[2.0.0]: https://github.com/Celeral/Utils/compare/v1.3.1...v2.0.0
 
