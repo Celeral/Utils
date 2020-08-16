@@ -605,5 +605,5 @@ public class AsyncTest
     }
   }
 
-  private static final Logger logger = LogManager.getLogger();
+  private static final Logger logger = LogManager.getLogger(AsyncTest.class);
 }
