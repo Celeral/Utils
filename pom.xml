@@ -29,8 +29,8 @@
   <packaging>jar</packaging>
 
   <properties>
-    <revision>2.0.3</revision>
-    <revision.base>2.0.2</revision.base>
+    <revision>2.0.4-SNAPSHOT</revision>
+    <revision.base>2.0.3</revision.base>
   </properties>
 
   <description>Collection of utility classes to ease writing boilerplate code fast!</description>
