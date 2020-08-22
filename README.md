@@ -19,7 +19,7 @@ To use the package, you need to use following Maven dependency:
 <properties>
   ...
   <!-- Use the latest version whenever possible. -->
-  <celeral.version.utils>2.0.2</celeral.version.utils>
+  <celeral.version.utils>2.0.3</celeral.version.utils>
   ...
 </properties>
 

@@ -194,7 +194,7 @@ public interface Throwables
   }
 
   @SuppressWarnings("unchecked")
-  public static <T extends Throwable> T throwSneaky(Throwable th) throws T
+  public static <T extends Throwable> RuntimeException throwSneaky(Throwable th) throws T
   {
     throw (T) th;
   }
