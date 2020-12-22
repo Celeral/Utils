@@ -35,6 +35,15 @@
 
   <description>Collection of utility classes to ease writing boilerplate code fast!</description>
 
+  <build>
+    <plugins>
+      <plugin>
+	<groupId>org.codehaus.mojo</groupId>
+	<artifactId>flatten-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>
