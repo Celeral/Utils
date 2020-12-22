@@ -196,6 +196,10 @@ public interface Async
 
       th.addSuppressed(rth);
     }
+
+    if (th != null) {
+      throw throwSneaky(th);
+    }
   }
 
 }
