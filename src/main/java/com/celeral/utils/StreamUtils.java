@@ -91,4 +91,51 @@ public class StreamUtils
     return newBuffer;
   }
 
+  /**
+   * Reads all the bytes from the input stream until either the array is full
+   * or the stream's end is reached. This function does not close the stream
+   * as it does not open it as well.
+   *
+   * @param stream input stream from where bytes are needed to be read
+   * @param bytes array to read the bytes into
+   * @return count of bytes read
+   * @throws IOException propagates the exceptions encountered while reading the stream
+   */
+  public static int readFully(InputStream stream, final byte[] bytes) throws IOException
+  {
+    int offset = stream.read(bytes);
+    if (offset == -1) {
+      return 0;
+    }
+
+    return offset + readFully(stream, bytes, offset, bytes.length - offset);
+  }
+
+  /**
+   * Reads all the bytes from the input stream until either the requested number
+   * of bytes are read or the stream's end is reached. This function does not close
+   * the stream as it does not open it as well.
+   *
+   * @param stream input stream from where bytes are needed to be read
+   * @param bytes array to read the bytes into
+   * @param offset location where the read bytes are written starting from
+   * @param length count of bytes to read if available
+   * @return count of bytes read
+   * @throws IOException propagates the exceptions encountered while reading the stream
+   */
+  public static int readFully(InputStream stream, final byte[] bytes, int offset, int length) throws IOException
+  {
+    int totalRead = 0;
+
+    while (totalRead < length) {
+      int read = stream.read(bytes, offset, length - totalRead);
+      if (read == -1) {
+        break;
+      }
+
+      totalRead += read;
+    }
+
+    return totalRead;
+  }
 }

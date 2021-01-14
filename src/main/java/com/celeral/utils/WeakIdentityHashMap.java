@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * An implementation of Map interface which provides the combination of IdentityHashMap and WeakHashMap.
@@ -38,6 +39,7 @@ public class WeakIdentityHashMap<K, V> implements Map<K, V>
 {
   private final ReferenceQueue<K> queue;
   private final HashMap<IdentityWeakReference, V> map;
+  private final Consumer<V> removalListener;
 
   /**
    * Wrapper to have a weak reference to the key object.
@@ -89,8 +91,13 @@ public class WeakIdentityHashMap<K, V> implements Map<K, V>
    */
   public WeakIdentityHashMap(int capacity)
   {
-    queue = new ReferenceQueue<>();
-    map = new HashMap<>(capacity);
+    this(capacity, v -> {});
+  }
+
+  public WeakIdentityHashMap(int capacity, Consumer<V> removalListener) {
+    this.queue = new ReferenceQueue<>();
+    this.map = new HashMap<>(capacity);
+    this.removalListener = removalListener;
   }
 
   private void reap()
@@ -99,7 +106,8 @@ public class WeakIdentityHashMap<K, V> implements Map<K, V>
     synchronized (map) {
       while ((poll = queue.poll()) != null) {
         //noinspection SuspiciousMethodCalls
-        map.remove(poll);
+        V v = map.remove(poll);
+        removalListener.accept(v);
       }
     }
   }
