@@ -1,11 +1,11 @@
 /*
- * Copyright 2018 Celeral.
+ * Copyright © 2021 Celeral.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,7 @@
 package com.celeral.utils;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -24,139 +25,117 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
- * This interface is essentially serializer/deserializer interface which works with String as
- * the serialized type. When initializing the attributes from the properties file, attribute
- * values represented as Strings are needed to be converted to POJO. This class facilitates the
- * conversion from and to String for attribute values.
+ * This interface is essentially serializer/deserializer interface which works with String as the
+ * serialized type. When initializing the attributes from the properties file, attribute values
+ * represented as Strings are needed to be converted to POJO. This class facilitates the conversion
+ * from and to String for attribute values.
  *
  * @param <T> Type of the object which can be converted to/from String.
  */
-public interface StringCodec<T>
-{
+public interface StringCodec<T> {
   /**
-   * Given a string representation (typically from properties file) for an object , create object from it.
+   * Given a string representation (typically from properties file) for an object , create object
+   * from it.
    *
    * @param string Type of the POJO which is created from String representation.
-   *
    * @return POJO obtained as a result of deserialization
    */
-  T fromString(String string);
+  T fromString(String string) throws ClassNotFoundException;
 
   /**
    * Given a POJO, serialize it to a String object (typically to be stored in properties file).
    *
    * @param pojo The object which needs to be serialized.
-   *
    * @return Serialized representation of pojo..
    */
   String toString(T pojo);
 
-  public class String2String implements StringCodec<String>, Serializable
-  {
+  public class String2String implements StringCodec<String>, Serializable {
     @Override
-    public String fromString(String string)
-    {
+    public String fromString(String string) {
       return string;
     }
 
     @Override
-    public String toString(String pojo)
-    {
+    public String toString(String pojo) {
       return pojo;
     }
 
     private static final long serialVersionUID = 201310141156L;
   }
 
-  public class Integer2String implements StringCodec<Integer>, Serializable
-  {
+  public class Integer2String implements StringCodec<Integer>, Serializable {
     @Override
-    public Integer fromString(String string)
-    {
+    public Integer fromString(String string) {
       return Integer.valueOf(string);
     }
 
     @Override
-    public String toString(Integer pojo)
-    {
+    public String toString(Integer pojo) {
       return String.valueOf(pojo);
     }
 
     private static final long serialVersionUID = 201310141157L;
   }
 
-  public class Short2String implements StringCodec<Short>, Serializable
-  {
+  public class Short2String implements StringCodec<Short>, Serializable {
     @Override
-    public Short fromString(String string)
-    {
+    public Short fromString(String string) {
       return Short.valueOf(string);
     }
 
     @Override
-    public String toString(Short pojo)
-    {
+    public String toString(Short pojo) {
       return String.valueOf(pojo);
     }
 
     private static final long serialVersionUID = 201310141157L;
   }
 
-  public class Long2String implements StringCodec<Long>, Serializable
-  {
+  public class Long2String implements StringCodec<Long>, Serializable {
     @Override
-    public Long fromString(String string)
-    {
+    public Long fromString(String string) {
       return Long.valueOf(string);
     }
 
     @Override
-    public String toString(Long pojo)
-    {
+    public String toString(Long pojo) {
       return String.valueOf(pojo);
     }
 
     private static final long serialVersionUID = 201310141158L;
   }
 
-  public class Boolean2String implements StringCodec<Boolean>, Serializable
-  {
+  public class Boolean2String implements StringCodec<Boolean>, Serializable {
     @Override
-    public Boolean fromString(String string)
-    {
+    public Boolean fromString(String string) {
       return Boolean.valueOf(string);
     }
 
     @Override
-    public String toString(Boolean pojo)
-    {
+    public String toString(Boolean pojo) {
       return String.valueOf(pojo);
     }
 
     private static final long serialVersionUID = 201310141159L;
   }
 
-  public class URI2String implements StringCodec<URI>, Serializable
-  {
+  public class URI2String implements StringCodec<URI>, Serializable {
     @Override
-    public URI fromString(String string)
-    {
+    public URI fromString(String string) {
       try {
         return new URI(string);
-      }
-      catch (URISyntaxException ex) {
+      } catch (URISyntaxException ex) {
         throw new RuntimeException(ex);
       }
     }
 
     @Override
-    public String toString(URI uri)
-    {
+    public String toString(URI uri) {
       return uri.toString();
     }
 
@@ -164,39 +143,35 @@ public interface StringCodec<T>
   }
 
   /**
-   * The attributes which represent arbitrary objects for which the schema cannot be
-   * standardized, we allow them to be represented as &lt;ClassName&gt;:&lt;Constructor_String&gt;:&lt;Property_String&gt;
-   * representation. This allows us to instantiate the class by invoking its constructor
-   * which takes &lt;String&gt; as argument. If only the &lt;ClassName&gt; is specified,
-   * then just the class is instantiated using default constructor. If colon is 
-   * specified then class is instantiated using constructor with string as an argument.
-   * If properties are specified then properties will be set on the object.
+   * The attributes which represent arbitrary objects for which the schema cannot be standardized,
+   * we allow them to be represented as
+   * &lt;ClassName&gt;:&lt;Constructor_String&gt;:&lt;Property_String&gt; representation. This
+   * allows us to instantiate the class by invoking its constructor which takes &lt;String&gt; as
+   * argument. If only the &lt;ClassName&gt; is specified, then just the class is instantiated using
+   * default constructor. If colon is specified then class is instantiated using constructor with
+   * string as an argument. If properties are specified then properties will be set on the object.
    * The properties are defined in property=value format separated by colon(:)
    *
    * @param <T> Type of the object which is converted to/from String
    */
-  public class Object2String<T> implements StringCodec<T>, Serializable
-  {
+  public class Object2String<T> implements StringCodec<T>, Serializable {
     public final String separator;
 
-    public Object2String()
-    {
+    public Object2String() {
       separator = ":";
     }
 
-    public Object2String(String separator)
-    {
+    public Object2String(String separator) {
       this.separator = separator;
     }
 
-    public static Class<?> loadClass(String classname, ClassLoader... loaders) throws ClassNotFoundException
-    {
+    public static Class<?> loadClass(String classname, ClassLoader... loaders)
+        throws ClassNotFoundException {
       if (loaders != null) {
         for (ClassLoader loader : loaders) {
           try {
             return loader.loadClass(classname);
-          }
-          catch (ClassNotFoundException ex) {
+          } catch (ClassNotFoundException ex) {
             /* we ignore */
           }
         }
@@ -207,27 +182,28 @@ public interface StringCodec<T>
 
     @Override
     @SuppressWarnings({"UseSpecificCatch", "BroadCatchBlock", "TooBroadCatch"})
-    public T fromString(String string)
-    {
+    public T fromString(String string) throws ClassNotFoundException {
       String[] parts = string.split(separator, 2);
 
+      @SuppressWarnings("unchecked")
+      Class<? extends T> clazz =
+          (Class<? extends T>) loadClass(parts[0], Thread.currentThread().getContextClassLoader());
       try {
-        @SuppressWarnings("unchecked")
-        Class<? extends T> clazz = (Class<? extends T>)loadClass(parts[0], Thread.currentThread().getContextClassLoader());
         if (parts.length == 1) {
           return clazz.getConstructor().newInstance();
         }
 
         return clazz.getConstructor(String.class).newInstance(parts[1]);
-      }
-      catch (Throwable cause) {
-        throw Throwables.wrapIfChecked(cause);
+      } catch (InvocationTargetException
+          | InstantiationException
+          | IllegalAccessException
+          | NoSuchMethodException ex) {
+        throw new RuntimeException(ex);
       }
     }
 
     @Override
-    public String toString(T pojo)
-    {
+    public String toString(T pojo) {
       String arg = pojo.toString();
       if (arg == null) {
         return pojo.getClass().getName();
@@ -239,37 +215,32 @@ public interface StringCodec<T>
     private static final long serialVersionUID = 201311141853L;
   }
 
-  public class Path2String implements StringCodec<Path>, Serializable
-  {
+  public class Path2String implements StringCodec<Path>, Serializable {
     @Override
-    public Path fromString(String string)
-    {
+    public Path fromString(String string) {
       try {
         return Paths.get(new URI(string));
-      }
-      catch (URISyntaxException ex) {
+      } catch (URISyntaxException ex) {
         throw new RuntimeException(ex);
       }
     }
 
     @Override
-    public String toString(Path pojo)
-    {
+    public String toString(Path pojo) {
       return pojo.toUri().toString();
     }
 
     private static final long serialVersionUID = 201707110528L;
   }
 
-  public class Map2String<K, V> implements StringCodec<Map<K, V>>, Serializable
-  {
+  public class Map2String<K, V> implements StringCodec<Map<K, V>>, Serializable {
     private final StringCodec<K> keyCodec;
     private final StringCodec<V> valueCodec;
     private final String separator;
     private final String equal;
 
-    public Map2String(String separator, String equal, StringCodec<K> keyCodec, StringCodec<V> valueCodec)
-    {
+    public Map2String(
+        String separator, String equal, StringCodec<K> keyCodec, StringCodec<V> valueCodec) {
       this.equal = equal;
       this.separator = separator;
       this.keyCodec = keyCodec;
@@ -277,8 +248,7 @@ public interface StringCodec<T>
     }
 
     @Override
-    public Map<K, V> fromString(String string)
-    {
+    public Map<K, V> fromString(String string) throws ClassNotFoundException {
       if (string == null) {
         return null;
       }
@@ -298,8 +268,7 @@ public interface StringCodec<T>
     }
 
     @Override
-    public String toString(Map<K, V> map)
-    {
+    public String toString(Map<K, V> map) {
       if (map == null) {
         return null;
       }
@@ -307,32 +276,31 @@ public interface StringCodec<T>
       if (map.isEmpty()) {
         return "";
       }
-      String[] parts = new String[map.size()];
-      int i = 0;
-      for (Map.Entry<K, V> entry : map.entrySet()) {
-        parts[i++] = keyCodec.toString(entry.getKey()) + equal + valueCodec.toString(entry.getValue());
+
+      final Iterator<Map.Entry<K, V>> iterator = map.entrySet().iterator();
+      StringBuilder sb = new StringBuilder(iterator.next().toString());
+      while (iterator.hasNext()) {
+        sb.append(separator).append(iterator.next().toString());
       }
-      return StringUtils.join(parts, separator);
+
+      return sb.toString();
     }
 
     private static final long serialVersionUID = 201402272053L;
   }
 
-  public class Collection2String<T> implements StringCodec<Collection<T>>, Serializable
-  {
+  public class Collection2String<T> implements StringCodec<Collection<T>>, Serializable {
     private final String separator;
     private final StringCodec<T> codec;
 
-    public Collection2String(String separator, StringCodec<T> codec)
-    {
+    public Collection2String(String separator, StringCodec<T> codec) {
       this.separator = separator;
       this.codec = codec;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public Collection<T> fromString(String string)
-    {
+    public Collection<T> fromString(String string) throws ClassNotFoundException {
       if (string == null) {
         return null;
       }
@@ -351,8 +319,7 @@ public interface StringCodec<T>
     }
 
     @Override
-    public String toString(Collection<T> pojo)
-    {
+    public String toString(Collection<T> pojo) {
       if (pojo == null) {
         return null;
       }
@@ -361,61 +328,49 @@ public interface StringCodec<T>
         return "";
       }
 
-      String[] parts = new String[pojo.size()];
-
-      int i = 0;
-      for (T o : pojo) {
-        parts[i++] = codec.toString(o);
+      final Iterator<T> iterator = pojo.iterator();
+      StringBuilder sb = new StringBuilder(codec.toString(iterator.next()));
+      while (iterator.hasNext()) {
+        sb.append(codec.toString(iterator.next()));
       }
 
-      return StringUtils.join(parts, separator);
+      return sb.toString();
     }
 
     private static final long serialVersionUID = 201401091806L;
   }
 
-  public class Enum2String<T extends Enum<T>> implements StringCodec<T>, Serializable
-  {
+  public class Enum2String<T extends Enum<T>> implements StringCodec<T>, Serializable {
     private final Class<T> clazz;
 
-    public Enum2String(Class<T> clazz)
-    {
+    public Enum2String(Class<T> clazz) {
       this.clazz = clazz;
     }
 
     @Override
-    public T fromString(String string)
-    {
+    public T fromString(String string) {
       return string == null ? null : Enum.valueOf(clazz, string);
     }
 
     @Override
-    public String toString(T pojo)
-    {
+    public String toString(T pojo) {
       return pojo == null ? null : pojo.name();
     }
 
     private static final long serialVersionUID = 201310181757L;
   }
 
-  public class Class2String<T> implements StringCodec<Class<? extends T>>, Serializable
-  {
+  public class Class2String<T> implements StringCodec<Class<? extends T>>, Serializable {
     @Override
-    public Class<? extends T> fromString(String string)
-    {
-      try {
-        @SuppressWarnings({"rawtypes", "unchecked"})
-        Class<? extends T> clazz = (Class)Thread.currentThread().getContextClassLoader().loadClass(string);
-        return clazz;
-      }
-      catch (ClassNotFoundException cause) {
-        throw new RuntimeException(cause);
-      }
+    public Class<? extends T> fromString(String string) throws ClassNotFoundException {
+      @SuppressWarnings({"rawtypes", "unchecked"})
+      Class<? extends T> clazz =
+          (Class) Thread.currentThread().getContextClassLoader().loadClass(string);
+      return clazz;
     }
 
     @Override
-    public String toString(Class<? extends T> clazz)
-    {
+    public String toString(Class<? extends T> clazz) {
       return clazz.getCanonicalName();
     }
 

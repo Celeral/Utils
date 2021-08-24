@@ -1,11 +1,9 @@
-/**
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
+/*
+ * Copyright © 2021 Celeral.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,26 +16,23 @@
 package org.getopt.util.hash;
 
 /**
- * This is a very fast, non-cryptographic hash suitable for general hash-based
- * lookup. See http://murmurhash.googlepages.com/ for more details.
+ * This is a very fast, non-cryptographic hash suitable for general hash-based lookup. See
+ * http://murmurhash.googlepages.com/ for more details.
  *
- * <p>The C version of MurmurHash 2.0 found at that site was ported
- * to Java by Andrzej Bialecki (ab at getopt org).</p>
+ * <p>The C version of MurmurHash 2.0 found at that site was ported to Java by Andrzej Bialecki (ab
+ * at getopt org).
  *
- * <p>Customized for Celeral's use for hash of byte array slice by
- * Chetan Narsude (chetan at apache org).</p>
+ * <p>Customized for Celeral's use for hash of byte array slice by Chetan Narsude (chetan at apache
+ * org).
  *
  * @since 1.0.0
  */
-public class MurmurHash
-{
-  public static int hash(byte[] data, int seed)
-  {
+public class MurmurHash {
+  public static int hash(byte[] data, int seed) {
     return hash(data, seed, 0, data.length);
   }
 
-  public static int hash(byte[] data, int seed, int offset, int length)
-  {
+  public static int hash(byte[] data, int seed, int offset, int length) {
     int m = 0x5bd1e995;
     int r = 24;
 
@@ -67,13 +62,13 @@ public class MurmurHash
     if (left != 0) {
       length += offset;
       if (left >= 3) {
-        h ^= (int)data[length - 3] << 16;
+        h ^= (int) data[length - 3] << 16;
       }
       if (left >= 2) {
-        h ^= (int)data[length - 2] << 8;
+        h ^= (int) data[length - 2] << 8;
       }
       if (left >= 1) {
-        h ^= (int)data[length - 1];
+        h ^= (int) data[length - 1];
       }
 
       h *= m;
@@ -85,5 +80,4 @@ public class MurmurHash
 
     return h;
   }
-
 }

@@ -1,11 +1,11 @@
 /*
- * Copyright 2019 Celeral.
+ * Copyright © 2021 Celeral.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,35 +20,30 @@ import java.util.Arrays;
 
 import org.getopt.util.hash.MurmurHash;
 
-public class Slice implements Serializable, Cloneable
-{
+public class Slice implements Serializable, Cloneable {
   public byte[] buffer;
   public int offset;
   public int length;
 
   @SuppressWarnings("unused")
-  private Slice()
-  {
+  private Slice() {
     /* needed for some serializers */
   }
 
-  public Slice(byte[] array, int offset, int length)
-  {
+  public Slice(byte[] array, int offset, int length) {
     buffer = array;
     this.offset = offset;
     this.length = length;
   }
 
-  public Slice(byte[] array)
-  {
+  public Slice(byte[] array) {
     buffer = array;
     this.offset = 0;
     this.length = array.length;
   }
 
   @Override
-  public int hashCode()
-  {
+  public int hashCode() {
     int hash = 5;
     hash = 59 * hash + MurmurHash.hash(buffer, hash, offset, length);
     hash = 59 * hash + this.offset;
@@ -57,15 +52,14 @@ public class Slice implements Serializable, Cloneable
   }
 
   @Override
-  public boolean equals(Object obj)
-  {
+  public boolean equals(Object obj) {
     if (obj == null) {
       return false;
     }
     if (getClass() != obj.getClass()) {
       return false;
     }
-    final Slice other = (Slice)obj;
+    final Slice other = (Slice) obj;
     if (this.length != other.length) {
       return false;
     }
@@ -88,39 +82,41 @@ public class Slice implements Serializable, Cloneable
 
   /**
    * Create deep copy of the slice.
+   *
    * @return
    * @throws CloneNotSupportedException
    */
   @Override
-  public Slice clone() throws CloneNotSupportedException
-  {
-    Slice clone = (Slice)super.clone();
+  public Slice clone() throws CloneNotSupportedException {
+    Slice clone = (Slice) super.clone();
     clone.buffer = buffer.clone();
     return clone;
   }
 
-  public byte[] toByteArray()
-  {
+  public byte[] toByteArray() {
     return Arrays.copyOfRange(this.buffer, this.offset, this.offset + this.length);
   }
 
   /**
-   * Constructs a new {@code String} by decoding the specified subarray of
-   * bytes using the platform's default charset. In other words it invokes
-   * the constructor String(buffer, offset, length).
+   * Constructs a new {@code String} by decoding the specified subarray of bytes using the
+   * platform's default charset. In other words it invokes the constructor String(buffer, offset,
+   * length).
    *
    * @return the string object backed by the array.
    */
-  public String stringValue()
-  {
+  public String stringValue() {
     return new String(buffer, offset, length);
   }
 
   @Override
   @SuppressWarnings("ImplicitArrayToString")
-  public String toString()
-  {
-    return getClass().getSimpleName() + '{' + (length > 256 ? "buffer=" + buffer + ", offset=" + offset + ", length=" + length : Arrays.toString(Arrays.copyOfRange(buffer, offset, offset + length))) + '}';
+  public String toString() {
+    return getClass().getSimpleName()
+        + '{'
+        + (length > 256
+            ? "buffer=" + buffer + ", offset=" + offset + ", length=" + length
+            : Arrays.toString(Arrays.copyOfRange(buffer, offset, offset + length)))
+        + '}';
   }
 
   private static final long serialVersionUID = 201311151835L;

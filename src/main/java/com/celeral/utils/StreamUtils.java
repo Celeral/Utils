@@ -1,11 +1,11 @@
 /*
- * Copyright 2019 Celeral.
+ * Copyright © 2021 Celeral.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,23 +19,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-/**
- * Utility functions to operate on the input/output streams.F*
- */
-public class StreamUtils
-{
+/** Utility functions to operate on the input/output streams.F* */
+public class StreamUtils {
   /**
-   * Reads all the bytes from the input stream until the stream's end is reached.
-   * This function does not close the stream as it does not open it as well.
+   * Reads all the bytes from the input stream until the stream's end is reached. This function does
+   * not close the stream as it does not open it as well.
    *
    * @param stream input stream from where bytes are needed to be read
-   * @return array of  bytes read
+   * @return array of bytes read
    * @throws IOException propagates the exceptions encountered while reading the stream
    */
-  public static byte[] readFully(InputStream stream) throws IOException
-  {
+  public static byte[] readFully(InputStream stream) throws IOException {
     int totalOffset = 0;
-    ArrayList<byte[]>  buffers = new ArrayList<>(1);
+    ArrayList<byte[]> buffers = new ArrayList<>(1);
 
     int available = stream.available();
     if (available == 0) {
@@ -52,17 +48,15 @@ public class StreamUtils
         read = stream.read();
         if (read == -1) {
           break;
-        }
-        else {
+        } else {
           buffers.add(buffer);
           int newLength = 1 << (31 - Integer.numberOfLeadingZeros(totalOffset));
           buffer = new byte[newLength];
-          buffer[0] = (byte)read;
+          buffer[0] = (byte) read;
           available = newLength - 1;
           offset = 1;
         }
-      }
-      else {
+      } else {
         offset += read;
         available -= read;
       }
@@ -75,8 +69,7 @@ public class StreamUtils
       }
 
       newBuffer = buffer;
-    }
-    else {
+    } else {
       newBuffer = new byte[totalOffset];
     }
 
@@ -92,17 +85,15 @@ public class StreamUtils
   }
 
   /**
-   * Reads all the bytes from the input stream until either the array is full
-   * or the stream's end is reached. This function does not close the stream
-   * as it does not open it as well.
+   * Reads all the bytes from the input stream until either the array is full or the stream's end is
+   * reached. This function does not close the stream as it does not open it as well.
    *
    * @param stream input stream from where bytes are needed to be read
    * @param bytes array to read the bytes into
    * @return count of bytes read
    * @throws IOException propagates the exceptions encountered while reading the stream
    */
-  public static int readFully(InputStream stream, final byte[] bytes) throws IOException
-  {
+  public static int readFully(InputStream stream, final byte[] bytes) throws IOException {
     int offset = stream.read(bytes);
     if (offset == -1) {
       return 0;
@@ -112,9 +103,9 @@ public class StreamUtils
   }
 
   /**
-   * Reads all the bytes from the input stream until either the requested number
-   * of bytes are read or the stream's end is reached. This function does not close
-   * the stream as it does not open it as well.
+   * Reads all the bytes from the input stream until either the requested number of bytes are read
+   * or the stream's end is reached. This function does not close the stream as it does not open it
+   * as well.
    *
    * @param stream input stream from where bytes are needed to be read
    * @param bytes array to read the bytes into
@@ -123,8 +114,8 @@ public class StreamUtils
    * @return count of bytes read
    * @throws IOException propagates the exceptions encountered while reading the stream
    */
-  public static int readFully(InputStream stream, final byte[] bytes, int offset, int length) throws IOException
-  {
+  public static int readFully(InputStream stream, final byte[] bytes, int offset, int length)
+      throws IOException {
     int totalRead = 0;
 
     while (totalRead < length) {

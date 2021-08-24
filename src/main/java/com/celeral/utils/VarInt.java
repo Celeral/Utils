@@ -1,11 +1,11 @@
 /*
- * Copyright 2019 Celeral.
+ * Copyright © 2021 Celeral.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,39 +15,35 @@
  */
 package com.celeral.utils;
 
-public class VarInt
-{
+public class VarInt {
   /**
-   * Writes the Variable Sized Integer of Length 32. Assumes that the buffer has 5 positions at least starting with offset.
+   * Writes the Variable Sized Integer of Length 32. Assumes that the buffer has 5 positions at
+   * least starting with offset.
    *
    * @param value
    * @param buffer
    * @param offset
-   *
    * @return int
    */
-  public static int write(int value, byte[] buffer, int offset)
-  {
+  public static int write(int value, byte[] buffer, int offset) {
     while (true) {
       if ((value & ~0x7F) == 0) {
-        buffer[offset++] = (byte)value;
+        buffer[offset++] = (byte) value;
         return offset;
-      }
-      else {
-        buffer[offset++] = (byte)((value & 0x7F) | 0x80);
+      } else {
+        buffer[offset++] = (byte) ((value & 0x7F) | 0x80);
         value >>>= 7;
       }
     }
   }
 
-  public static int write(int value, byte[] buffer, int offset, int size)
-  {
+  public static int write(int value, byte[] buffer, int offset, int size) {
     int i = write(value, buffer, offset);
     int expectedOffset = offset + size;
     if (i < expectedOffset--) {
       buffer[i - 1] |= 0x80;
       while (i < expectedOffset) {
-        buffer[i++] = (byte)0x80;
+        buffer[i++] = (byte) 0x80;
       }
       buffer[i++] = 0;
     }
@@ -55,34 +51,27 @@ public class VarInt
     return i;
   }
 
-  public static int getSize(int value)
-  {
+  public static int getSize(int value) {
     int offset = 0;
     while (true) {
       if ((value & ~0x7F) == 0) {
         return ++offset;
-      }
-      else {
+      } else {
         ++offset;
         value >>>= 7;
       }
     }
   }
 
-  public static class MutableInt
-  {
-    public MutableInt(int integer)
-    {
+  public static class MutableInt {
+    public MutableInt(int integer) {
       this.integer = integer;
     }
 
-    public MutableInt()
-    {
-    }
+    public MutableInt() {}
 
     @Override
-    public String toString()
-    {
+    public String toString() {
       return Integer.toString(integer);
     }
 
@@ -90,72 +79,60 @@ public class VarInt
   }
 
   /**
-   *
    * @param readBuffer The array of bytes which contains the data to be parsed.
-   * @param offset     The offset where we should start reading the first 7 bits of varint.
-   * @param limit      The length of the slice of the data array where in which we are reading varint.
-   * @param newOffset  If the varint is read successfully, newOffset contains the position after varint.
-   *
+   * @param offset The offset where we should start reading the first 7 bits of varint.
+   * @param limit The length of the slice of the data array where in which we are reading varint.
+   * @param newOffset If the varint is read successfully, newOffset contains the position after
+   *     varint.
    * @return varint value read
    */
-  public static int read(byte[] readBuffer, int offset, int limit, MutableInt newOffset)
-  {
+  public static int read(byte[] readBuffer, int offset, int limit, MutableInt newOffset) {
     if (offset < limit) {
       byte tmp = readBuffer[offset++];
       if (tmp >= 0) {
         newOffset.integer = offset;
         return tmp;
-      }
-      else if (offset < limit) {
+      } else if (offset < limit) {
         int integer = tmp & 0x7f;
         tmp = readBuffer[offset++];
         if (tmp >= 0) {
           newOffset.integer = offset;
           return integer | tmp << 7;
-        }
-        else if (offset < limit) {
+        } else if (offset < limit) {
           integer |= (tmp & 0x7f) << 7;
           tmp = readBuffer[offset++];
 
           if (tmp >= 0) {
             newOffset.integer = offset;
             return integer | tmp << 14;
-          }
-          else if (offset < limit) {
+          } else if (offset < limit) {
             integer |= (tmp & 0x7f) << 14;
             tmp = readBuffer[offset++];
             if (tmp >= 0) {
               newOffset.integer = offset;
               return integer | tmp << 21;
-            }
-            else if (offset < limit) {
+            } else if (offset < limit) {
               integer |= (tmp & 0x7f) << 21;
               tmp = readBuffer[offset++];
               if (tmp >= 0) {
                 newOffset.integer = offset;
                 return integer | tmp << 28;
-              }
-              else {
+              } else {
                 newOffset.integer = -5;
               }
-            }
-            else {
+            } else {
               newOffset.integer = -4;
             }
-          }
-          else {
+          } else {
             newOffset.integer = -3;
           }
-        }
-        else {
+        } else {
           newOffset.integer = -2;
         }
-      }
-      else {
+      } else {
         newOffset.integer = -1;
       }
-    }
-    else {
+    } else {
       newOffset.integer = 0;
     }
 

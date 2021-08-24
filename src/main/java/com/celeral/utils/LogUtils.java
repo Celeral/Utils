@@ -1,11 +1,11 @@
 /*
- * Copyright 2018 Celeral.
+ * Copyright © 2021 Celeral.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,36 +19,30 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.logging.log4j.Logger;
 
-public interface LogUtils
-{
+public interface LogUtils {
   public static final String JAVA_CLASS_PATH = "java.class.path";
   public static final String JAVA_LIBRARY_PATH = "java.library.path";
   public static final String LD_LIBRARY_PATH = "LD_LIBRARY_PATH";
 
-  public static void logPath(Logger logger, String key, String path)
-  {
+  public static void logPath(Logger logger, String key, String path) {
     if (path == null) {
       logger.debug("{} is not set!", key);
-    }
-    else {
+    } else {
       String[] components = StringUtils.split(path, ':');
       path = StringUtils.join(components, "\n  ");
       logger.debug("{}:\n  {}", key, path);
     }
   }
 
-  static void logJavaClassPath(Logger logger)
-  {
+  static void logJavaClassPath(Logger logger) {
     logPath(logger, JAVA_CLASS_PATH, SystemUtils.JAVA_CLASS_PATH);
   }
 
-  static void logJavaLibraryPath(Logger logger)
-  {
+  static void logJavaLibraryPath(Logger logger) {
     logPath(logger, JAVA_LIBRARY_PATH, SystemUtils.JAVA_LIBRARY_PATH);
   }
 
-  static void logLDLibraryPath(Logger logger)
-  {
+  static void logLDLibraryPath(Logger logger) {
     logPath(logger, LD_LIBRARY_PATH, System.getenv(LD_LIBRARY_PATH));
   }
 }
