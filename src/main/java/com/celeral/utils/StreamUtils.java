@@ -47,6 +47,7 @@ public class StreamUtils {
         totalOffset += buffer.length;
         read = stream.read();
         if (read == -1) {
+          offset = 0;
           break;
         } else {
           buffers.add(buffer);
@@ -61,6 +62,8 @@ public class StreamUtils {
         available -= read;
       }
     }
+
+    totalOffset += offset;
 
     byte[] newBuffer;
     if (buffer.length == totalOffset) {
