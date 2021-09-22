@@ -15,6 +15,8 @@
  */
 package com.celeral.utils;
 
+import java.io.File;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.logging.log4j.Logger;
@@ -28,7 +30,7 @@ public interface LogUtils {
     if (path == null) {
       logger.debug("{} is not set!", key);
     } else {
-      String[] components = StringUtils.split(path, ':');
+      String[] components = StringUtils.split(path, File.pathSeparatorChar);
       path = StringUtils.join(components, "\n  ");
       logger.debug("{}:\n  {}", key, path);
     }
