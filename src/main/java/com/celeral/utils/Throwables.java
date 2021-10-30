@@ -16,6 +16,7 @@
 package com.celeral.utils;
 
 import java.lang.reflect.Constructor;
+import java.util.Arrays;
 
 /**
  * Collection of helper methods to ensure that exceptions are properly thrown. If the cause is of
@@ -111,7 +112,7 @@ public interface Throwables {
    *     java.lang.Object...)
    */
   @SuppressWarnings("UseSpecificCatch")
-  public static <T extends Throwable> T throwFormatted(
+  static <T extends Throwable> T throwFormatted(
       Class<T> clazz, String messagePattern, Object... args) throws T {
     throw Throwables.throwFormatted(null, clazz, messagePattern, args);
   }
@@ -185,6 +186,20 @@ public interface Throwables {
     T instance;
     try {
       instance = factory.createThrowable(message);
+      final StackTraceElement[] stackTrace = instance.getStackTrace();
+
+      boolean expected = true;
+      for (int i = 0; i < stackTrace.length; i++) {
+        final boolean equals = stackTrace[i].getClassName().equals(Throwables.class.getName());
+        if (equals == expected) {
+          if (expected) {
+            expected = false;
+          } else {
+            instance.setStackTrace(Arrays.copyOfRange(stackTrace, i, stackTrace.length));
+            break;
+          }
+        }
+      }
     } catch (Exception ex) {
       throw Throwables.throwFormatted(
           ex, RuntimeException.class, "Couldn't throw exception with message {}!", message);

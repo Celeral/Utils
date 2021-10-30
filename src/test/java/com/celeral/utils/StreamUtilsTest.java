@@ -19,7 +19,6 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,8 +27,6 @@ import java.security.NoSuchAlgorithmException;
 
 import org.junit.Assert;
 import org.junit.Test;
-
-import org.apache.logging.log4j.core.util.IOUtils;
 
 public class StreamUtilsTest {
 
@@ -59,14 +56,17 @@ public class StreamUtilsTest {
   }
 
   @Test
-  public void readFullyFile() throws IOException
-  {
+  public void readFullyFile() throws IOException {
     byte[] readFully;
     try (InputStream stream = StreamUtils.class.getResourceAsStream("AsyncTest.class")) {
       readFully = StreamUtils.readFully(stream);
     }
 
-    final Path target = Paths.get("target", "test-classes", AsyncTest.class.getName().replace('.', '/') + ".class");
+    final Path target =
+        Paths.get(
+            System.getProperty("project.build.directory"),
+            "test-classes",
+            AsyncTest.class.getName().replace('.', '/') + ".class");
     byte[] files = Files.readAllBytes(target);
 
     Assert.assertArrayEquals("bytes from 2 different methods", files, readFully);
