@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 @FunctionalInterface
 public interface AutoConsumer<T> {
   /**
-   * Performs this operation on the given argument.
+   * Performs the consume operation on the given argument.
    *
    * @param t the input argument
    * @throws Exception if this consumable cannot be consumed

@@ -19,7 +19,7 @@ To use the package, you need to use following Maven dependency:
 <properties>
   ...
   <!-- Use the latest version whenever possible. -->
-  <celeral.version.utils>2.0.4</celeral.version.utils>
+  <celeral.version.utils>2.2.0</celeral.version.utils>
   ...
 </properties>
 
@@ -34,8 +34,8 @@ To use the package, you need to use following Maven dependency:
 </dependencies>
 ```
 
-or download jars from [Central Maven repository](http://repo1.maven.org/maven2/com/celeral/utils/).
+or download jars from [Central Maven repository](https://repo1.maven.org/maven2/com/celeral/utils/).
 
 ## Non-Maven
 
-For non-Maven use cases, you download jars from [Central Maven repository](http://repo1.maven.org/maven2/com/celeral/utils/).
+For non-Maven use cases, you download jars from [Central Maven repository](https://repo1.maven.org/maven2/com/celeral/utils/).
