@@ -29,8 +29,8 @@
   <packaging>jar</packaging>
 
   <properties>
-    <revision>2.2.0</revision>
-    <revision.base>2.1.0</revision.base>
+    <revision>2.2.1</revision>
+    <revision.base>2.2.0</revision.base>
   </properties>
 
   <name>${project.organization.name} - ${project.artifactId}</name>

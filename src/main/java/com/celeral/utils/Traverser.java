@@ -22,106 +22,80 @@ import javax.validation.constraints.NotNull;
 
 /**
  * Performs a depth first iteration of a hierarchical structure.
- * @param <T> Type of the elements iterated.
  *
+ * @param <T> Type of the elements iterated.
  * @author Chetan Narsude {@literal <chetan@celeral.com>}
  */
 public class Traverser<T> implements Iterator<T>, Serializable {
-  private final ChildEnumerator<T> childEnumerator;
-  private final LeafChecker<T> leafChecker;
+  @FunctionalInterface
+  public interface ChildrenEnumerator<T> {
+    T[] getChildren(T element);
+  }
 
-  static class Visitor<T> implements Iterator<T>, Serializable {
-    T element;
+  private static class ArrayIterator<T> implements Iterator<T> {
+    private final T[] array;
+    private int index;
+    private ArrayIterator<T> next;
+
+    public ArrayIterator(T[] array) {
+      this.array = array;
+    }
 
     @Override
     public boolean hasNext() {
-      return element != null;
+      return index < array.length;
     }
 
     @Override
     public T next() {
-      try {
-        return element;
-      } finally {
-        element = null;
-      }
-    }
-
-    void setElement(T element) {
-      this.element = element;
+      return array[index++];
     }
   }
 
-  @FunctionalInterface
-  public interface LeafChecker<T> {
-    boolean isLeaf(T element);
-  }
-
-  @FunctionalInterface
-  public interface ChildEnumerator<T> {
-    T[] getChildren(T element);
-  }
-
-  private final T[] elements;
-  private final Visitor<T> visitor;
-  private Iterator<T> currentIterator;
-  private int currentIndex;
+  private final ChildrenEnumerator<T> childrenEnumerator;
+  private ArrayIterator<T> currentIterator;
+  private T previous;
+  private boolean isPrevious;
 
   public Traverser(
-      T[] elements,
-      @NotNull LeafChecker<T> leafChecker,
-      @NotNull ChildEnumerator<T> childEnumerator) {
-    this(elements, leafChecker, childEnumerator, new Visitor<>());
+      @NotNull T[] elements, @NotNull Traverser.ChildrenEnumerator<T> childrenEnumerator) {
+    this(new ArrayIterator<>(elements.clone()), childrenEnumerator);
   }
 
-  private Traverser(
-      T[] elements,
-      LeafChecker<T> leafChecker,
-      ChildEnumerator<T> childEnumerator,
-      Visitor<T> visitor) {
-    if (elements == null) {
-      @SuppressWarnings("unchecked")
-      final T[] ts = (T[]) new Object[0];
-      this.elements = ts;
-    } else {
-      this.elements = elements.clone();
-    }
-
-    this.leafChecker = leafChecker;
-    this.childEnumerator = childEnumerator;
-    this.visitor = visitor;
+  private Traverser(ArrayIterator<T> iterator, ChildrenEnumerator<T> childrenEnumerator) {
+    currentIterator = iterator;
+    this.childrenEnumerator = childrenEnumerator;
   }
 
   @Override
   public boolean hasNext() {
-    do {
-      if (currentIterator == null) {
-        if (currentIndex < elements.length) {
-          T element = elements[currentIndex];
-          if (leafChecker.isLeaf(element)) {
-            visitor.setElement(element);
-            currentIterator = visitor;
-            return true;
-          } else {
-            currentIterator =
-                new Traverser<>(childEnumerator.getChildren(element), leafChecker, childEnumerator);
-          }
-        } else {
-          return false;
-        }
-      } else {
-        if (currentIterator.hasNext()) {
-          return true;
-        }
-
-        currentIterator = null;
-        currentIndex++;
+    if (isPrevious) {
+      final T[] children = childrenEnumerator.getChildren(previous);
+      if (children != null && children.length != 0) {
+        final ArrayIterator<T> arrayIterator = new ArrayIterator<>(children);
+        arrayIterator.next = currentIterator;
+        currentIterator = arrayIterator;
       }
-    } while (true);
+
+      isPrevious = false;
+    }
+
+    do {
+      if (currentIterator.hasNext()) {
+        return true;
+      }
+
+      currentIterator = currentIterator.next;
+    } while (currentIterator != null);
+
+    return false;
   }
 
   @Override
   public T next() {
-    return currentIterator.next();
+    final T next = currentIterator.next();
+    isPrevious = true;
+    previous = next;
+    return next;
   }
 }
